@@ -1,0 +1,2053 @@
+<!DOCTYPE html>
+<html lang="nl">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Nederlands Weer</title>
+
+  <style>
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+
+      font-family: Arial, Helvetica, sans-serif;
+
+      background: linear-gradient(
+        135deg,
+        #0d47a1,
+        #1976d2,
+        #64b5f6
+      );
+
+      color: #222;
+    }
+
+    .container {
+      width: 1100px;
+      max-width: 94%;
+
+      margin: 35px auto;
+    }
+
+    .header {
+      color: white;
+      text-align: center;
+
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      font-size: 42px;
+      margin: 0;
+    }
+
+    .header p {
+      margin-top: 8px;
+      opacity: 0.9;
+    }
+
+    .kaart {
+      background: white;
+
+      border-radius: 22px;
+
+      padding: 25px;
+
+      box-shadow:
+        0 15px 45px rgba(0,0,0,0.25);
+    }
+
+    /* ==============================
+       KEUZE PROVINCIE / PLAATS
+    ============================== */
+
+    .keuze {
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 15px;
+
+      margin-bottom: 25px;
+    }
+
+    .keuze label {
+      display: block;
+
+      font-weight: bold;
+
+      margin-bottom: 7px;
+    }
+
+    select {
+      width: 100%;
+
+      padding: 13px;
+
+      border: 2px solid #1976d2;
+
+      border-radius: 10px;
+
+      font-size: 16px;
+
+      background: white;
+
+      cursor: pointer;
+    }
+
+    /* ==============================
+       HUIDIG WEER
+    ============================== */
+
+    .huidig {
+      background:
+        linear-gradient(
+          135deg,
+          #e3f2fd,
+          #bbdefb
+        );
+
+      border-radius: 18px;
+
+      padding: 25px;
+
+      margin-bottom: 30px;
+    }
+
+    .plaats-naam {
+      text-align: center;
+
+      color: #0d47a1;
+
+      font-size: 30px;
+
+      font-weight: bold;
+
+      margin-bottom: 20px;
+    }
+
+    .huidig-hoofd {
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      align-items: center;
+
+      gap: 20px;
+    }
+
+    .temperatuur {
+      text-align: center;
+
+      font-size: 70px;
+
+      font-weight: bold;
+
+      color: #0d47a1;
+    }
+
+    .weer-icoon {
+      font-size: 65px;
+
+      text-align: center;
+    }
+
+    .omschrijving {
+      text-align: center;
+
+      font-size: 22px;
+
+      color: #444;
+
+      margin-top: 8px;
+    }
+
+    .details {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 10px;
+
+      margin-top: 25px;
+    }
+
+    .detail {
+      background: white;
+
+      padding: 15px;
+
+      border-radius: 12px;
+
+      text-align: center;
+    }
+
+    .detail-icoon {
+      font-size: 25px;
+    }
+
+    .detail-waarde {
+      font-size: 18px;
+
+      font-weight: bold;
+
+      margin-top: 5px;
+    }
+
+    .detail-naam {
+      color: #777;
+
+      font-size: 13px;
+
+      margin-top: 4px;
+    }
+
+    /* ==============================
+       7 DAGEN
+    ============================== */
+
+    .titel {
+      color: #0d47a1;
+
+      margin-bottom: 15px;
+    }
+
+    .dagen {
+      display: grid;
+
+      grid-template-columns:
+        repeat(7, 1fr);
+
+      gap: 10px;
+    }
+
+    .dag {
+      background: #f5faff;
+
+      border: 1px solid #d5eaff;
+
+      border-radius: 14px;
+
+      padding: 15px 10px;
+
+      text-align: center;
+
+      min-width: 0;
+    }
+
+    .dag-naam {
+      font-weight: bold;
+
+      color: #333;
+
+      font-size: 15px;
+    }
+
+    .dag-datum {
+      color: #777;
+
+      font-size: 12px;
+
+      margin-top: 4px;
+    }
+
+    .dag-icoon {
+      font-size: 38px;
+
+      margin: 12px 0;
+    }
+
+    .dag-max {
+      font-size: 22px;
+
+      font-weight: bold;
+
+      color: #1976d2;
+    }
+
+    .dag-min {
+      color: #777;
+
+      margin-top: 4px;
+    }
+
+    .dag-regen {
+      margin-top: 10px;
+
+      font-size: 13px;
+
+      color: #555;
+    }
+
+    .dag-wind {
+      margin-top: 7px;
+
+      font-size: 13px;
+
+      color: #555;
+    }
+
+    /* ==============================
+       UUR VOORSPELLING
+    ============================== */
+
+    .uur-container {
+      display: flex;
+
+      gap: 10px;
+
+      overflow-x: auto;
+
+      padding-bottom: 10px;
+    }
+
+    .uur {
+      min-width: 90px;
+
+      background: #f5faff;
+
+      border-radius: 12px;
+
+      padding: 12px 8px;
+
+      text-align: center;
+    }
+
+    .uur-tijd {
+      font-weight: bold;
+    }
+
+    .uur-icoon {
+      font-size: 28px;
+
+      margin: 7px 0;
+    }
+
+    .uur-temp {
+      color: #1976d2;
+
+      font-size: 18px;
+
+      font-weight: bold;
+    }
+
+    .uur-regen {
+      color: #555;
+
+      font-size: 12px;
+
+      margin-top: 5px;
+    }
+
+    /* ==============================
+       BRONNEN
+    ============================== */
+
+    .bronnen {
+      margin-top: 30px;
+
+      padding: 20px;
+
+      background: #f5f5f5;
+
+      border-radius: 15px;
+
+      text-align: center;
+    }
+
+    .bron-knoppen {
+      display: flex;
+
+      justify-content: center;
+
+      gap: 10px;
+
+      flex-wrap: wrap;
+
+      margin-top: 15px;
+    }
+
+    .bron-knop {
+      display: inline-block;
+
+      background: #1976d2;
+
+      color: white;
+
+      text-decoration: none;
+
+      padding: 11px 18px;
+
+      border-radius: 9px;
+
+      font-weight: bold;
+    }
+
+    .bron-knop:hover {
+      background: #0d47a1;
+    }
+
+    /* ==============================
+       STATUS
+    ============================== */
+
+    .status {
+      text-align: center;
+
+      color: #888;
+
+      font-size: 12px;
+
+      margin-top: 20px;
+    }
+
+    .fout {
+      display: none;
+
+      margin-top: 15px;
+
+      padding: 15px;
+
+      border-radius: 10px;
+
+      background: #ffebee;
+
+      color: #c62828;
+
+      text-align: center;
+    }
+
+    /* ==============================
+       MOBIEL
+    ============================== */
+
+    @media (max-width: 900px) {
+
+      .dagen {
+        grid-template-columns:
+          repeat(4, 1fr);
+      }
+
+    }
+
+
+    @media (max-width: 650px) {
+
+      body {
+        background: #e3f2fd;
+      }
+
+      .container {
+        max-width: 100%;
+
+        margin: 0;
+      }
+
+      .kaart {
+        border-radius: 0;
+
+        padding: 18px;
+
+        min-height: 100vh;
+      }
+
+      .header {
+        padding: 25px 15px;
+
+        margin: 0;
+      }
+
+      .header h1 {
+        font-size: 30px;
+      }
+
+      .keuze {
+        grid-template-columns: 1fr;
+      }
+
+      .huidig-hoofd {
+        grid-template-columns: 1fr;
+      }
+
+      .temperatuur {
+        font-size: 58px;
+      }
+
+      .details {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .dagen {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .dag {
+        padding: 15px 8px;
+      }
+
+    }
+
+
+    @media (max-width: 400px) {
+
+      .details {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .dag-icoon {
+        font-size: 32px;
+      }
+
+      .dag-max {
+        font-size: 20px;
+      }
+
+    }
+
+  </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+  <div class="header">
+
+    <h1>
+      🇳🇱 Nederlands Weer
+    </h1>
+
+    <p>
+      Actueel weer en verwachting
+    </p>
+
+  </div>
+
+
+
+  <div class="kaart">
+
+
+    <!-- ==========================
+         PROVINCIE EN PLAATS
+    =========================== -->
+
+    <div class="keuze">
+
+
+      <div>
+
+        <label for="provincie">
+          Provincie
+        </label>
+
+        <select
+          id="provincie"
+          onchange="laadPlaatsen()"
+        ></select>
+
+      </div>
+
+
+      <div>
+
+        <label for="plaats">
+          Plaats
+        </label>
+
+        <select
+          id="plaats"
+          onchange="laadWeer()"
+        ></select>
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- ==========================
+         HUIDIG WEER
+    =========================== -->
+
+    <div class="huidig">
+
+
+      <div
+        class="plaats-naam"
+        id="plaatsNaam"
+      >
+        --
+      </div>
+
+
+      <div class="huidig-hoofd">
+
+
+        <div>
+
+          <div
+            class="temperatuur"
+            id="temperatuur"
+          >
+            --°C
+          </div>
+
+        </div>
+
+
+        <div>
+
+          <div
+            class="weer-icoon"
+            id="weerIcoon"
+          >
+            🌤️
+          </div>
+
+          <div
+            class="omschrijving"
+            id="omschrijving"
+          >
+            Laden...
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+
+      <div class="details">
+
+
+        <div class="detail">
+
+          <div class="detail-icoon">
+            🤗
+          </div>
+
+          <div
+            class="detail-waarde"
+            id="gevoel"
+          >
+            --
+          </div>
+
+          <div class="detail-naam">
+            Gevoelstemperatuur
+          </div>
+
+        </div>
+
+
+        <div class="detail">
+
+          <div class="detail-icoon">
+            💧
+          </div>
+
+          <div
+            class="detail-waarde"
+            id="regen"
+          >
+            --
+          </div>
+
+          <div class="detail-naam">
+            Regen
+          </div>
+
+        </div>
+
+
+        <div class="detail">
+
+          <div class="detail-icoon">
+            💨
+          </div>
+
+          <div
+            class="detail-waarde"
+            id="wind"
+          >
+            --
+          </div>
+
+          <div class="detail-naam">
+            Wind
+          </div>
+
+        </div>
+
+
+        <div class="detail">
+
+          <div class="detail-icoon">
+            💦
+          </div>
+
+          <div
+            class="detail-waarde"
+            id="vocht"
+          >
+            --
+          </div>
+
+          <div class="detail-naam">
+            Luchtvochtigheid
+          </div>
+
+        </div>
+
+
+      </div>
+
+
+    </div>
+
+
+
+    <!-- ==========================
+         7 DAGEN
+    =========================== -->
+
+    <h2 class="titel">
+      📅 7-daagse verwachting
+    </h2>
+
+
+    <div
+      class="dagen"
+      id="dagen"
+    >
+
+      Laden...
+
+    </div>
+
+
+
+    <!-- ==========================
+         UURVOORSPELLING
+    =========================== -->
+
+    <h2 class="titel" style="margin-top:30px;">
+
+      🕐 Vandaag per uur
+
+    </h2>
+
+
+    <div
+      class="uur-container"
+      id="uren"
+    >
+
+      Laden...
+
+    </div>
+
+
+
+    <!-- ==========================
+         BRONNEN
+    =========================== -->
+
+    <div class="bronnen">
+
+      <strong>
+        Weerbronnen
+      </strong>
+
+      <p>
+        De plaatsgebonden verwachting wordt
+        berekend op basis van de gekozen
+        plaats en coördinaten.
+      </p>
+
+
+      <div class="bron-knoppen">
+
+
+        <a
+          class="bron-knop"
+          href="https://www.buienradar.nl"
+          target="_blank"
+        >
+          🌧️ Buienradar
+        </a>
+
+
+        <a
+          class="bron-knop"
+          href="https://www.weeronline.nl"
+          target="_blank"
+        >
+          🌤️ Weeronline
+        </a>
+
+
+        <a
+          class="bron-knop"
+          href="https://www.knmi.nl"
+          target="_blank"
+        >
+          🇳🇱 KNMI
+        </a>
+
+
+      </div>
+
+    </div>
+
+
+
+    <div
+      class="status"
+      id="status"
+    >
+      Gegevens worden geladen...
+    </div>
+
+
+    <div
+      class="fout"
+      id="fout"
+    >
+      Het weer kon niet worden geladen.
+      Controleer je internetverbinding.
+    </div>
+
+
+  </div>
+
+</div>
+
+
+
+<script>
+
+
+/*
+============================================================
+PLAATSEN
+============================================================
+
+De coördinaten zijn van de gekozen plaats.
+
+Daardoor krijgt bijvoorbeeld Groningen
+weer voor Groningen en niet automatisch
+weer van een willekeurig station ergens
+in de provincie.
+============================================================
+*/
+
+
+const provincies = {
+
+
+  "Groningen": [
+
+    ["Groningen", 53.2194, 6.5665],
+
+    ["Delfzijl", 53.3300, 6.9180],
+
+    ["Winschoten", 53.1446, 7.0348],
+
+    ["Veendam", 53.1094, 6.8792],
+
+    ["Stadskanaal", 52.9895, 6.9500],
+
+    ["Hoogezand", 53.1617, 6.7611],
+
+    ["Appingedam", 53.3217, 6.8581],
+
+    ["Haren", 53.1721, 6.6092],
+
+    ["Leek", 53.1625, 6.3764],
+
+    ["Pekela", 53.0798, 7.0091]
+
+  ],
+
+
+  "Friesland": [
+
+    ["Leeuwarden", 53.2012, 5.7999],
+
+    ["Drachten", 53.1125, 6.0989],
+
+    ["Sneek", 53.0330, 5.6589],
+
+    ["Heerenveen", 52.9593, 5.9185],
+
+    ["Harlingen", 53.1746, 5.4220],
+
+    ["Franeker", 53.1870, 5.5412],
+
+    ["Dokkum", 53.3222, 5.9998],
+
+    ["Joure", 52.9657, 5.7993],
+
+    ["Bolsward", 53.0644, 5.5216],
+
+    ["Wolvega", 52.8755, 5.9990]
+
+  ],
+
+
+  "Drenthe": [
+
+    ["Assen", 52.9925, 6.5625],
+
+    ["Emmen", 52.7792, 6.9069],
+
+    ["Hoogeveen", 52.7308, 6.4768],
+
+    ["Meppel", 52.6958, 6.1947],
+
+    ["Coevorden", 52.6610, 6.7400],
+
+    ["Beilen", 52.8633, 6.5131],
+
+    ["Roden", 53.1375, 6.4261],
+
+    ["Borger", 52.9231, 6.7934]
+
+  ],
+
+
+  "Overijssel": [
+
+    ["Zwolle", 52.5168, 6.0830],
+
+    ["Enschede", 52.2215, 6.8937],
+
+    ["Deventer", 52.2550, 6.1639],
+
+    ["Almelo", 52.3567, 6.6625],
+
+    ["Hengelo", 52.2658, 6.7930],
+
+    ["Kampen", 52.5550, 5.9110],
+
+    ["Hardenberg", 52.5758, 6.6194],
+
+    ["Oldenzaal", 52.3133, 6.9292],
+
+    ["Raalte", 52.3858, 6.2750],
+
+    ["Steenwijk", 52.7875, 6.1208]
+
+  ],
+
+
+  "Flevoland": [
+
+    ["Lelystad", 52.5185, 5.4714],
+
+    ["Almere", 52.3508, 5.2647],
+
+    ["Dronten", 52.5250, 5.7181],
+
+    ["Emmeloord", 52.7108, 5.7481],
+
+    ["Urk", 52.6625, 5.6014],
+
+    ["Zeewolde", 52.3300, 5.5417]
+
+  ],
+
+
+  "Gelderland": [
+
+    ["Arnhem", 51.9851, 5.8987],
+
+    ["Nijmegen", 51.8426, 5.8518],
+
+    ["Apeldoorn", 52.2112, 5.9699],
+
+    ["Ede", 52.0400, 5.6681],
+
+    ["Doetinchem", 51.9650, 6.2889],
+
+    ["Tiel", 51.8867, 5.4292],
+
+    ["Harderwijk", 52.3500, 5.6208],
+
+    ["Zutphen", 52.1383, 6.2014],
+
+    ["Winterswijk", 51.9725, 6.7194],
+
+    ["Culemborg", 51.9550, 5.2278]
+
+  ],
+
+
+  "Utrecht": [
+
+    ["Utrecht", 52.0907, 5.1214],
+
+    ["Amersfoort", 52.1561, 5.3878],
+
+    ["Nieuwegein", 52.0292, 5.0914],
+
+    ["Zeist", 52.0900, 5.2333],
+
+    ["Veenendaal", 52.0250, 5.5583],
+
+    ["Woerden", 52.0858, 4.8833],
+
+    ["Houten", 52.0283, 5.1681],
+
+    ["Maarssen", 52.1392, 5.0417]
+
+  ],
+
+
+  "Noord-Holland": [
+
+    ["Amsterdam", 52.3676, 4.9041],
+
+    ["Haarlem", 52.3874, 4.6462],
+
+    ["Alkmaar", 52.6324, 4.7534],
+
+    ["Zaandam", 52.4385, 4.8264],
+
+    ["Hoorn", 52.6425, 5.0608],
+
+    ["Den Helder", 52.9563, 4.7593],
+
+    ["Hilversum", 52.2292, 5.1667],
+
+    ["Purmerend", 52.5050, 4.9597],
+
+    ["Heerhugowaard", 52.6717, 4.8353],
+
+    ["Beverwijk", 52.4833, 4.6569]
+
+  ],
+
+
+  "Zuid-Holland": [
+
+    ["Rotterdam", 51.9244, 4.4777],
+
+    ["Den Haag", 52.0705, 4.3007],
+
+    ["Leiden", 52.1601, 4.4970],
+
+    ["Dordrecht", 51.8133, 4.6901],
+
+    ["Gouda", 52.0115, 4.7105],
+
+    ["Delft", 52.0116, 4.3571],
+
+    ["Zoetermeer", 52.0607, 4.4940],
+
+    ["Spijkenisse", 51.8450, 4.3292],
+
+    ["Katwijk", 52.2033, 4.3986],
+
+    ["Alphen aan den Rijn", 52.1292, 4.6555]
+
+  ],
+
+
+  "Zeeland": [
+
+    ["Middelburg", 51.4988, 3.6109],
+
+    ["Vlissingen", 51.4425, 3.5736],
+
+    ["Goes", 51.5042, 3.8883],
+
+    ["Terneuzen", 51.3358, 3.8278],
+
+    ["Zierikzee", 51.6500, 3.9194],
+
+    ["Hulst", 51.2800, 4.0528],
+
+    ["Tholen", 51.5317, 4.2208],
+
+    ["Domburg", 51.5633, 3.4958]
+
+  ],
+
+
+  "Noord-Brabant": [
+
+    ["Eindhoven", 51.4416, 5.4697],
+
+    ["Tilburg", 51.5555, 5.0913],
+
+    ["Breda", 51.5719, 4.7683],
+
+    ["Den Bosch", 51.6978, 5.3037],
+
+    ["Roosendaal", 51.5308, 4.4653],
+
+    ["Helmond", 51.4817, 5.6611],
+
+    ["Oss", 51.7650, 5.5181],
+
+    ["Bergen op Zoom", 51.4950, 4.2917],
+
+    ["Waalwijk", 51.6825, 5.0708],
+
+    ["Valkenswaard", 51.3500, 5.4597]
+
+  ],
+
+
+  "Limburg": [
+
+    ["Maastricht", 50.8514, 5.6910],
+
+    ["Venlo", 51.3704, 6.1724],
+
+    ["Heerlen", 50.8882, 5.9795],
+
+    ["Roermond", 51.1942, 5.9875],
+
+    ["Sittard", 50.9983, 5.8694],
+
+    ["Weert", 51.2517, 5.7069],
+
+    ["Venray", 51.5250, 5.9750],
+
+    ["Kerkrade", 50.8658, 6.0625],
+
+    ["Geleen", 50.9650, 5.8292],
+
+    ["Gennep", 51.6983, 5.9708]
+
+  ]
+
+};
+
+
+
+/*
+============================================================
+ELEMENTEN
+============================================================
+*/
+
+
+const provincie =
+  document.getElementById("provincie");
+
+const plaats =
+  document.getElementById("plaats");
+
+
+
+/*
+============================================================
+PROVINCIES LADEN
+============================================================
+*/
+
+
+function laadProvincies() {
+
+  provincie.innerHTML = "";
+
+
+  Object.keys(provincies).forEach(
+    function(naam) {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        naam;
+
+      option.textContent =
+        naam;
+
+      provincie.appendChild(
+        option
+      );
+
+    }
+  );
+
+}
+
+
+
+/*
+============================================================
+PLAATSEN LADEN
+============================================================
+*/
+
+
+function laadPlaatsen() {
+
+  const naam =
+    provincie.value;
+
+  const plaatsen =
+    provincies[naam];
+
+
+  plaats.innerHTML = "";
+
+
+  plaatsen.forEach(
+    function(item, index) {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        index;
+
+      option.textContent =
+        item[0];
+
+      plaats.appendChild(
+        option
+      );
+
+    }
+  );
+
+
+  laadWeer();
+
+}
+
+
+
+/*
+============================================================
+WEER OPHALEN
+============================================================
+*/
+
+
+async function laadWeer() {
+
+
+  const provincieNaam =
+    provincie.value;
+
+  const index =
+    Number(plaats.value);
+
+
+  const gekozen =
+    provincies[
+      provincieNaam
+    ][index];
+
+
+  const naam =
+    gekozen[0];
+
+  const latitude =
+    gekozen[1];
+
+  const longitude =
+    gekozen[2];
+
+
+  document.getElementById(
+    "plaatsNaam"
+  ).textContent =
+    naam;
+
+
+  document.getElementById(
+    "status"
+  ).textContent =
+    "Weer wordt geladen...";
+
+
+  document.getElementById(
+    "fout"
+  ).style.display =
+    "none";
+
+
+  try {
+
+
+    /*
+    --------------------------------------------------------
+    Open-Meteo API
+
+    We gebruiken de exacte coördinaten
+    van de gekozen plaats.
+    --------------------------------------------------------
+    */
+
+
+    const url =
+      "https://api.open-meteo.com/v1/forecast" +
+
+      `?latitude=${latitude}` +
+
+      `&longitude=${longitude}` +
+
+      "&current=" +
+
+      "temperature_2m," +
+
+      "relative_humidity_2m," +
+
+      "apparent_temperature," +
+
+      "precipitation," +
+
+      "weather_code," +
+
+      "wind_speed_10m," +
+
+      "wind_direction_10m" +
+
+      "&hourly=" +
+
+      "temperature_2m," +
+
+      "precipitation_probability," +
+
+      "weather_code," +
+
+      "wind_speed_10m" +
+
+      "&daily=" +
+
+      "weather_code," +
+
+      "temperature_2m_max," +
+
+      "temperature_2m_min," +
+
+      "precipitation_probability_max," +
+
+      "wind_speed_10m_max," +
+
+      "wind_direction_10m_dominant" +
+
+      "&forecast_days=7" +
+
+      "&timezone=Europe%2FAmsterdam";
+
+
+    const response =
+      await fetch(
+        url,
+        {
+          cache: "no-store"
+        }
+      );
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Weer API fout"
+      );
+
+    }
+
+
+    const data =
+      await response.json();
+
+
+    toonHuidigWeer(
+      data.current
+    );
+
+
+    toon7Dagen(
+      data.daily
+    );
+
+
+    toonUren(
+      data.hourly
+    );
+
+
+    const tijd =
+      new Date()
+        .toLocaleTimeString(
+          "nl-NL",
+          {
+            hour: "2-digit",
+            minute: "2-digit"
+          }
+        );
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      `Laatste update: ${tijd} • ${naam}`;
+
+
+  }
+
+  catch(error) {
+
+    console.error(error);
+
+
+    document.getElementById(
+      "fout"
+    ).style.display =
+      "block";
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "Het weer kon niet worden geladen.";
+
+  }
+
+}
+
+
+
+/*
+============================================================
+HUIDIG WEER
+============================================================
+*/
+
+
+function toonHuidigWeer(
+  current
+) {
+
+
+  /*
+  Eén decimaal.
+
+  Dus bijvoorbeeld:
+  19.0°C
+
+  en niet:
+  20°C
+  */
+
+
+  document.getElementById(
+    "temperatuur"
+  ).textContent =
+    `${Number(
+      current.temperature_2m
+    ).toFixed(1)}°C`;
+
+
+  document.getElementById(
+    "gevoel"
+  ).textContent =
+    `${Number(
+      current.apparent_temperature
+    ).toFixed(1)}°C`;
+
+
+  document.getElementById(
+    "regen"
+  ).textContent =
+    `${Number(
+      current.precipitation
+    ).toFixed(1)} mm`;
+
+
+  document.getElementById(
+    "vocht"
+  ).textContent =
+    `${Math.round(
+      current.relative_humidity_2m
+    )}%`;
+
+
+  const wind =
+    msNaarBft(
+      current.wind_speed_10m
+    );
+
+
+  const richting =
+    gradenNaarRichting(
+      current.wind_direction_10m
+    );
+
+
+  document.getElementById(
+    "wind"
+  ).textContent =
+    `${richting} ${wind} Bft`;
+
+
+  const info =
+    weerInfo(
+      current.weather_code
+    );
+
+
+  document.getElementById(
+    "weerIcoon"
+  ).textContent =
+    info.icoon;
+
+
+  document.getElementById(
+    "omschrijving"
+  ).textContent =
+    info.tekst;
+
+}
+
+
+
+/*
+============================================================
+7 DAGEN
+============================================================
+*/
+
+
+function toon7Dagen(
+  daily
+) {
+
+
+  const container =
+    document.getElementById(
+      "dagen"
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  for (
+    let i = 0;
+    i < 7;
+    i++
+  ) {
+
+
+    const datum =
+      new Date(
+        daily.time[i] +
+        "T12:00:00"
+      );
+
+
+    const dagNaam =
+      datum.toLocaleDateString(
+        "nl-NL",
+        {
+          weekday: "short"
+        }
+      );
+
+
+    const datumTekst =
+      datum.toLocaleDateString(
+        "nl-NL",
+        {
+          day: "numeric",
+          month: "short"
+        }
+      );
+
+
+    const info =
+      weerInfo(
+        daily.weather_code[i]
+      );
+
+
+    const max =
+      Number(
+        daily.temperature_2m_max[i]
+      ).toFixed(1);
+
+
+    const min =
+      Number(
+        daily.temperature_2m_min[i]
+      ).toFixed(1);
+
+
+    const regen =
+      daily
+        .precipitation_probability_max[i];
+
+
+    const wind =
+      msNaarBft(
+        daily.wind_speed_10m_max[i]
+      );
+
+
+    const richting =
+      gradenNaarRichting(
+        daily.wind_direction_10m_dominant[i]
+      );
+
+
+    const kaart =
+      document.createElement(
+        "div"
+      );
+
+
+    kaart.className =
+      "dag";
+
+
+    kaart.innerHTML = `
+
+      <div class="dag-naam">
+        ${dagNaam}
+      </div>
+
+      <div class="dag-datum">
+        ${datumTekst}
+      </div>
+
+      <div class="dag-icoon">
+        ${info.icoon}
+      </div>
+
+      <div class="dag-max">
+        ${max}°C
+      </div>
+
+      <div class="dag-min">
+        min. ${min}°C
+      </div>
+
+      <div class="dag-regen">
+        🌧️ ${regen}% regen
+      </div>
+
+      <div class="dag-wind">
+        💨 ${richting} ${wind} Bft
+      </div>
+
+    `;
+
+
+    container.appendChild(
+      kaart
+    );
+
+  }
+
+}
+
+
+
+/*
+============================================================
+UURVOORSPELLING
+============================================================
+*/
+
+
+function toonUren(
+  hourly
+) {
+
+
+  const container =
+    document.getElementById(
+      "uren"
+    );
+
+
+  container.innerHTML =
+    "";
+
+
+  const nu =
+    new Date();
+
+
+  let aantal =
+    0;
+
+
+  for (
+    let i = 0;
+    i < hourly.time.length;
+    i++
+  ) {
+
+
+    const tijd =
+      new Date(
+        hourly.time[i]
+      );
+
+
+    if (
+      tijd < nu
+    ) {
+      continue;
+    }
+
+
+    /*
+    Alleen de komende
+    12 uur tonen.
+    */
+
+
+    if (
+      aantal >= 12
+    ) {
+      break;
+    }
+
+
+    const temp =
+      Number(
+        hourly.temperature_2m[i]
+      ).toFixed(1);
+
+
+    const regen =
+      hourly
+        .precipitation_probability[i];
+
+
+    const info =
+      weerInfo(
+        hourly.weather_code[i]
+      );
+
+
+    const kaart =
+      document.createElement(
+        "div"
+      );
+
+
+    kaart.className =
+      "uur";
+
+
+    kaart.innerHTML = `
+
+      <div class="uur-tijd">
+        ${tijd.toLocaleTimeString(
+          "nl-NL",
+          {
+            hour: "2-digit",
+            minute: "2-digit"
+          }
+        )}
+      </div>
+
+      <div class="uur-icoon">
+        ${info.icoon}
+      </div>
+
+      <div class="uur-temp">
+        ${temp}°C
+      </div>
+
+      <div class="uur-regen">
+        🌧️ ${regen}%
+      </div>
+
+    `;
+
+
+    container.appendChild(
+      kaart
+    );
+
+
+    aantal++;
+
+  }
+
+}
+
+
+
+/*
+============================================================
+WEEROMSCHRIJVING
+============================================================
+*/
+
+
+function weerInfo(
+  code
+) {
+
+
+  if (code === 0) {
+
+    return {
+      icoon: "☀️",
+      tekst: "Helder"
+    };
+
+  }
+
+
+  if (code === 1) {
+
+    return {
+      icoon: "🌤️",
+      tekst: "Overwegend helder"
+    };
+
+  }
+
+
+  if (code === 2) {
+
+    return {
+      icoon: "⛅",
+      tekst: "Gedeeltelijk bewolkt"
+    };
+
+  }
+
+
+  if (code === 3) {
+
+    return {
+      icoon: "☁️",
+      tekst: "Bewolkt"
+    };
+
+  }
+
+
+  if (
+    code === 45 ||
+    code === 48
+  ) {
+
+    return {
+      icoon: "🌫️",
+      tekst: "Mist"
+    };
+
+  }
+
+
+  if (
+    code >= 51 &&
+    code <= 57
+  ) {
+
+    return {
+      icoon: "🌦️",
+      tekst: "Motregen"
+    };
+
+  }
+
+
+  if (
+    code >= 61 &&
+    code <= 67
+  ) {
+
+    return {
+      icoon: "🌧️",
+      tekst: "Regen"
+    };
+
+  }
+
+
+  if (
+    code >= 71 &&
+    code <= 77
+  ) {
+
+    return {
+      icoon: "❄️",
+      tekst: "Sneeuw"
+    };
+
+  }
+
+
+  if (
+    code >= 80 &&
+    code <= 82
+  ) {
+
+    return {
+      icoon: "🌧️",
+      tekst: "Regenbuien"
+    };
+
+  }
+
+
+  if (
+    code >= 95
+  ) {
+
+    return {
+      icoon: "⛈️",
+      tekst: "Onweer"
+    };
+
+  }
+
+
+  return {
+    icoon: "🌤️",
+    tekst: "Onbekend"
+  };
+
+}
+
+
+
+/*
+============================================================
+WIND: M/S NAAR BEAUFORT
+============================================================
+*/
+
+
+function msNaarBft(
+  ms
+) {
+
+
+  if (ms < 0.3) return 0;
+  if (ms < 1.6) return 1;
+  if (ms < 3.4) return 2;
+  if (ms < 5.5) return 3;
+  if (ms < 8.0) return 4;
+  if (ms < 10.8) return 5;
+  if (ms < 13.9) return 6;
+  if (ms < 17.2) return 7;
+  if (ms < 20.8) return 8;
+  if (ms < 24.5) return 9;
+  if (ms < 28.5) return 10;
+  if (ms < 32.7) return 11;
+
+  return 12;
+
+}
+
+
+
+/*
+============================================================
+WINDRICHTING
+============================================================
+*/
+
+
+function gradenNaarRichting(
+  graden
+) {
+
+
+  const richtingen = [
+
+    "N",
+    "NNO",
+    "NO",
+    "ONO",
+    "O",
+    "OZO",
+    "ZO",
+    "ZZO",
+    "Z",
+    "ZZW",
+    "ZW",
+    "WZW",
+    "W",
+    "WNW",
+    "NW",
+    "NNW"
+
+  ];
+
+
+  const index =
+    Math.round(
+      graden / 22.5
+    ) % 16;
+
+
+  return richtingen[index];
+
+}
+
+
+
+/*
+============================================================
+START
+============================================================
+*/
+
+
+laadProvincies();
+
+laadPlaatsen();
+
+
+
+/*
+============================================================
+AUTOMATISCHE UPDATE
+
+Iedere 10 minuten.
+============================================================
+*/
+
+
+setInterval(
+  laadWeer,
+  10 * 60 * 1000
+);
+
+
+</script>
+
+
+</body>
+
+</html>
